@@ -1,34 +1,128 @@
 extern crate todolst;
 extern crate clap;
+extern crate futures;
+
+mod show_cmd;
+mod add_cmd;
+mod modify_cmd;
+mod delete_cmd;
+mod utils;
 
 use todolst::components::{ group::*, list::*, item::*, todolst::* };
-use clap::{ App, Arg, SubCommand };
+use clap::{ App, Arg, SubCommand, ArgMatches };
+use futures::executor::block_on;
+use show_cmd::show_command;
+use add_cmd::add_command;
+use modify_cmd::modify_command;
+use delete_cmd::delete_command;
 
 fn main() {
-    println!("Hello, world!");
-    let _matches = App::new("TodoLst-cli")
+    let matches = App::new("TodoLst-cli")
                             .version("0.1")
                             .author("Hx Xiu")
                             .about("TodoLst Command Interface")
                             .subcommand(SubCommand::with_name("show")
                                     .about("print todo items.")
-                                    .arg(Arg::with_name("group")
-                                            .short("g")
-                                            .long("group")
-                                            .value_name("GROUP")
-                                            .help("specify group in which items or lists showed."))
-                                    .arg(Arg::with_name("list")
-                                            .short("l")
-                                            .long("list")
-                                            .value_name("LIST")
-                                            .help("specify list in which items showed."))
-                                    .arg(Arg::with_name("groups")
-                                            .long("groups")
-                                            .conflicts_with("lists")
-                                            .help("list groups instead of items"))
-                                    .arg(Arg::with_name("lists")
-                                            .long("lists")
-                                            .help("print list instead of items")))
+                                    // .arg(Arg::with_name("group")
+                                    //         .short("g")
+                                    //         .long("group")
+                                    //         .conflicts_with("list")
+                                    //         .value_name("GROUP")
+                                    //         .help("specify group in which items, lists or groups showed."))
+                                    // .arg(Arg::with_name("list")
+                                    //         .short("l")
+                                    //         .long("list")
+                                    //         .value_name("LIST")
+                                    //         .help("specify list in which items showed."))
+                                    // .arg(Arg::with_name("groups")
+                                    //         .long("groups")
+                                    //         .conflicts_with("lists")
+                                    //         .conflicts_with("list")
+                                    //         .help("list groups instead of items"))
+                                    // .arg(Arg::with_name("lists")
+                                    //         .long("lists")
+                                    //         .conflicts_with("list")
+                                    //         .help("print list instead of items"))
+                                    .subcommand(SubCommand::with_name("group")
+                                            .about("show groups.")
+                                            .arg(Arg::with_name("GROUP")
+                                                    .index(1)
+                                                    .help("specify a group to show detail."))
+                                            .arg(Arg::with_name("parent")
+                                                    .long("parent")
+                                                    .help("to show parent of the groups."))
+                                            .arg(Arg::with_name("title")
+                                                    .long("title")
+                                                    .help("to show title of the groups."))
+                                            .arg(Arg::with_name("with-parent")
+                                                    .long("with-parent")
+                                                    .short("p")
+                                                    .value_name("PARENT")
+                                                    .help("specify parent in which groups showed.")))
+                                    .subcommand(SubCommand::with_name("list")
+                                            .about("show lists.")
+                                            .arg(Arg::with_name("LIST")
+                                                    .index(1)
+                                                    .help("specify a list to show detail."))
+                                            .arg(Arg::with_name("group")
+                                                    .long("group")
+                                                    .help("to show group of the groups."))
+                                            .arg(Arg::with_name("title")
+                                                    .long("title")
+                                                    .help("to show title of the groups."))
+                                            .arg(Arg::with_name("with-group")
+                                                    .long("with-group")
+                                                    .short("g")
+                                                    .value_name("GROUP")
+                                                    .help("specify group in which lists showed.")))
+                                    .subcommand(SubCommand::with_name("item")
+                                            .about("show items.")
+                                            .arg(Arg::with_name("ITEM")
+                                                    .index(1)
+                                                    .help("specify a item to show detail."))
+                                            .arg(Arg::with_name("id")
+                                                    .long("id")
+                                                    .help("specify item's id."))
+                                            .arg(Arg::with_name("message")
+                                                    .long("message")
+                                                    .help("show the item's message"))
+                                            .arg(Arg::with_name("list")
+                                                    .long("list")
+                                                    .help("show the item's list."))
+                                            .arg(Arg::with_name("level")
+                                                    .long("level")
+                                                    .help("show the item's level, 0 indicates normal, higher the number, more important the item is."))
+                                            .arg(Arg::with_name("today")
+                                                    .long("today")
+                                                    .help("show the item's today."))
+                                            .arg(Arg::with_name("notice")
+                                                    .long("notice")
+                                                    .help("show the item's notice."))
+                                            .arg(Arg::with_name("deadline")
+                                                    .long("deadline")
+                                                    .help("show the item's deadline."))
+                                            .arg(Arg::with_name("plan")
+                                                    .long("plan")
+                                                    .help("show the item's plan."))
+                                            .arg(Arg::with_name("repeat")
+                                                    .long("repeat")
+                                                    .help("show the item's repeat span, format with {a number}(y|m|w|d), like \"1w\" means 1 week."))
+                                            .arg(Arg::with_name("finished")
+                                                    .long("finished")
+                                                    .help("show the item's finished."))
+                                            .arg(Arg::with_name("note")
+                                                    .long("note")
+                                                    .help("show the item's note."))
+                                            .arg(Arg::with_name("with-list")
+                                                    .long("with-list")
+                                                    .short("l")
+                                                    .value_name("LIST")
+                                                    .help("specify list in which items showed."))
+                                            .arg(Arg::with_name("with-group")
+                                                    .long("with-group")
+                                                    .short("g")
+                                                    .value_name("GROUP")
+                                                    .help("specify group in which items showed."))))
                             .subcommand(SubCommand::with_name("add")
                                     .about("add item, list or group.")
                                     .subcommand(SubCommand::with_name("item")
@@ -187,5 +281,21 @@ fn main() {
                             .get_matches();
 
     
-    
+    match matches.subcommand() {
+        ("show", Some(sub_m)) => { show_command(sub_m) },
+        ("add", Some(sub_m)) => { add_command(sub_m) },
+        ("modify", Some(sub_m)) => { modify_command(sub_m) },
+        ("delete", Some(sub_m)) => { delete_command(sub_m) },
+        _ => (),
+    }
 }
+
+
+
+
+
+
+
+
+
+

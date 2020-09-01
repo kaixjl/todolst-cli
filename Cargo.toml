@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 todolst = { path = "../todolst" }
 clap = "2.33.2"
+futures = "0.3.5"
+chrono = "0.4"
