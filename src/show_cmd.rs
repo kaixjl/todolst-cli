@@ -31,7 +31,7 @@ fn show_group_command(sub_m: &ArgMatches) {
     if sub_m.is_present("GROUP") {
         if print_options.is_all_false() { print_options.set_all(true) }
 
-        let group_expected = sub_m.values_of("GROUP").expect("GROUP title should not empty.").collect::<Vec<&str>>();
+        let group_expected = sub_m.values_of("GROUP").expect("GROUP title should not be empty.").collect::<Vec<&str>>();
 
         let groups = system.iter_groups().filter(|i| {
             let i = i.upgrade().unwrap();
@@ -55,7 +55,7 @@ fn show_group_command(sub_m: &ArgMatches) {
                     Some(parent) => {
                         let parent = parent.upgrade().unwrap();
                         let parent = parent.lock().unwrap();
-                        parent.title() == sub_m.value_of("with-parent").expect("with-parent should not empty.")
+                        parent.title() == sub_m.value_of("with-parent").expect("with-parent should not be empty.")
                     }
                 }
             }).collect()
@@ -138,7 +138,7 @@ fn show_list_command(sub_m: &ArgMatches) {
     if sub_m.is_present("LIST") {
         if print_options.is_all_false() { print_options.set_all(true); }
 
-        let list_expected = sub_m.values_of("LIST").expect("LIST title should not empty.").collect::<Vec<&str>>();
+        let list_expected = sub_m.values_of("LIST").expect("LIST title should not be empty.").collect::<Vec<&str>>();
         let lists = system.iter_lists().filter(|i| {
             let i = i.upgrade().unwrap();
             let i = i.lock().unwrap();
@@ -161,7 +161,7 @@ fn show_list_command(sub_m: &ArgMatches) {
                     Some(group) => {
                         let group = group.upgrade().unwrap();
                         let group = group.lock().unwrap();
-                        group.title() == sub_m.value_of("with-group").expect("with-group should not empty.")
+                        group.title() == sub_m.value_of("with-group").expect("with-group should not be empty.")
                     }
                 }
             }).collect()
@@ -254,7 +254,7 @@ fn show_item_command(sub_m: &ArgMatches) {
     if sub_m.is_present("ITEM") {
         if print_options.is_all_false() { print_options.set_all(true); }
 
-        let item_expected = sub_m.values_of("ITEM").expect("ITEM title should not empty.").map(|i|{
+        let item_expected = sub_m.values_of("ITEM").expect("ITEM title should not be empty.").map(|i|{
             i.parse::<u32>().expect("ITEM should be a number.")
         }).collect::<Vec<u32>>();
         let items = system.iter_items().filter(|i| {
@@ -283,7 +283,7 @@ fn show_item_command(sub_m: &ArgMatches) {
                     Some(list) => {
                         let list = list.upgrade().unwrap();
                         let list = list.lock().unwrap();
-                        list.title() == sub_m.value_of("with-list").expect("with-list should not empty.")
+                        list.title() == sub_m.value_of("with-list").expect("with-list should not be empty.")
                     }
                 }
             }).collect()
@@ -304,7 +304,7 @@ fn show_item_command(sub_m: &ArgMatches) {
                             Some(group) => {
                                 let group = group.upgrade().unwrap();
                                 let group = group.lock().unwrap();
-                                group.title() == sub_m.value_of("with-group").expect("with-group should not empty.")
+                                group.title() == sub_m.value_of("with-group").expect("with-group should not be empty.")
                             }
                         }
                     }
