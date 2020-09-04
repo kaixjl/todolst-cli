@@ -1,7 +1,7 @@
-use todolst::components::{ group::*, list::*, item::*, todolst::* };
-use clap::{ App, Arg, SubCommand, ArgMatches };
+use todolst::components::{ item::* };
+use clap::{ ArgMatches };
 use chrono::prelude::*;
-use futures::executor::block_on;
+// use futures::executor::block_on;
 use crate::utils::{ load_todolst, save_todolst };
 
 pub fn add_command(sub_m: &ArgMatches) {
@@ -21,7 +21,7 @@ fn add_group_command(sub_m: &ArgMatches) {
         else { None }
     } else { None };
     let mut system = load_todolst();
-    let group = system.new_group(title).expect("Fail to add new group");
+    system.new_group(title).expect("Fail to add new group");
     if let Some(parent) = parent {
         let parent = system.group(parent).unwrap();
         system.set_group_parent(title, Some(parent)).unwrap();
@@ -37,7 +37,7 @@ fn add_list_command(sub_m: &ArgMatches) {
         else { None }
     } else { None };
     let mut system = load_todolst();
-    let list = system.new_list(title).expect("Fail to add new list");
+    system.new_list(title).expect("Fail to add new list");
     if let Some(group) = group {
         let group = system.group(group).unwrap();
         system.set_list_group(title, Some(group)).unwrap();

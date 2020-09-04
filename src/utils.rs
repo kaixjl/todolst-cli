@@ -1,5 +1,4 @@
-use todolst::components::{ group::*, list::*, item::*, todolst::* };
-use clap::{ App, Arg, SubCommand, ArgMatches };
+use todolst::components::{ todolst::* };
 use futures::executor::block_on;
 
 pub fn load_todolst() -> TodoLst {

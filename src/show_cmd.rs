@@ -1,8 +1,7 @@
-use todolst::components::{ group::*, list::*, item::*, todolst::* };
-use clap::{ App, Arg, SubCommand, ArgMatches };
-use futures::executor::block_on;
+use todolst::components::{ group::*, list::*, item::* };
+use clap::{ ArgMatches };
 use std::sync::{ Weak, Mutex };
-use crate::utils::{ load_todolst, save_todolst };
+use crate::utils::{ load_todolst };
 
 pub fn show_command(sub_m: &ArgMatches) {
     match sub_m.subcommand() {
