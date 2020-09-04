@@ -344,7 +344,7 @@ fn print_items(items: Vec<Weak<Mutex<Item>>>, print_options: ItemPrintOptions) {
         if print_options.level { details.push(item.level().to_string()); }
         if print_options.style { details.push(item.style().to_string()); }
         if print_options.today { details.push(item.today().to_string()); }
-        if print_options.notice { details.push(match item.notice() { None => "[null]".to_string(), Some(t) => t.format("%Y-%m-%d %H:%M:%S").to_string() } ); }
+        if print_options.notice { details.push(match item.notice() { None => "[null]".to_string(), Some(t) => t.format("%Y-%m-%dT%H:%M:%S").to_string() } ); }
         if print_options.deadline { details.push(match item.deadline() { None => "[null]".to_string(), Some(t) => t.format("%Y-%m-%d").to_string() } ); }
         if print_options.plan { details.push(match item.plan() { None => "[null]".to_string(), Some(t) => t.format("%Y-%m-%d").to_string() } ); }
         if print_options.repeat { details.push(item.repeat().to_string_or("[null]".to_string())); }
