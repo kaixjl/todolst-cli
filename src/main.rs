@@ -6,6 +6,7 @@ mod show_cmd;
 mod add_cmd;
 mod modify_cmd;
 mod delete_cmd;
+mod run_cmd;
 mod utils;
 
 use clap::{ App, Arg, SubCommand };
@@ -15,6 +16,7 @@ use show_cmd::show_command;
 use add_cmd::add_command;
 use modify_cmd::modify_command;
 use delete_cmd::delete_command;
+use run_cmd::run_command;
 
 fn main() {
     run(args_os());
@@ -293,6 +295,8 @@ where
                                                 .required(true)
                                                 .multiple(true)
                                                 .help("specify group to be deleted."))))
+                        .subcommand(SubCommand::with_name("run")
+                                .about("running noticer."))
                         .get_matches_from(itr);
 
     match matches.subcommand() {
@@ -300,6 +304,7 @@ where
         ("add", Some(sub_m)) => { add_command(sub_m) },
         ("modify", Some(sub_m)) => { modify_command(sub_m) },
         ("delete", Some(sub_m)) => { delete_command(sub_m) },
+        ("run", Some(sub_m)) => { run_command(sub_m) },
         _ => (),
     }
 }
