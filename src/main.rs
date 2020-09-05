@@ -8,15 +8,23 @@ mod modify_cmd;
 mod delete_cmd;
 mod utils;
 
-use todolst::components::{ group::*, list::*, item::*, todolst::* };
-use clap::{ App, Arg, SubCommand, ArgMatches };
-use futures::executor::block_on;
+use clap::{ App, Arg, SubCommand };
+use std::env::args_os;
+use std::ffi::OsString;
 use show_cmd::show_command;
 use add_cmd::add_command;
 use modify_cmd::modify_command;
 use delete_cmd::delete_command;
 
 fn main() {
+    run(args_os());
+}
+
+pub fn run<I, T>(itr: I)
+where 
+        I: IntoIterator<Item = T>,
+        T: Into<OsString> + Clone
+{
     let matches = App::new("TodoLst-cli")
                         .version("0.1")
                         .author("Hx Xiu")
@@ -258,7 +266,7 @@ fn main() {
                                                 .long("parent")
                                                 .value_name("PARENT")
                                                 .help("specify parent group to which the new group attached."))
-                                        .arg(Arg::with_name("TITLE")
+                                        .arg(Arg::with_name("title")
                                                 .long("title")
                                                 .value_name("TITLE")
                                                 .help("specify new title."))))
@@ -285,8 +293,7 @@ fn main() {
                                                 .required(true)
                                                 .multiple(true)
                                                 .help("specify group to be deleted."))))
-                        .get_matches();
-
+                        .get_matches_from(itr);
 
     match matches.subcommand() {
         ("show", Some(sub_m)) => { show_command(sub_m) },
@@ -296,13 +303,4 @@ fn main() {
         _ => (),
     }
 }
-
-
-
-
-
-
-
-
-
 
