@@ -2,5 +2,6 @@
 
 *.bak
 *.db
+Cargo.lock
 
 /.vscode/
